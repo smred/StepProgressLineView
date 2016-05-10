@@ -20,11 +20,25 @@
         attrs:color_default="@color/colorPrimaryDark"
         attrs:step_count="10"/>
 
-    <Button
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="setStep"
-        android:text="@string/step_set_7"/>
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/step_number_edit_text"
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:hint="@string/input_step_number"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="setStep"
+            android:text="@string/step_set"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/bottom"

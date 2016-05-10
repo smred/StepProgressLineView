@@ -102,7 +102,7 @@ public class StepProgressLineView extends RelativeLayout {
     }
 
     public void stepSet(int step) {
-        if (step > 0 && step < mStepCount) {
+        if (step > 0 && step <= mStepCount) {
             mStepCurrent = step;
             updateLayouts();
         }
@@ -122,7 +122,6 @@ public class StepProgressLineView extends RelativeLayout {
         super.onLayout(changed, l, t, r, b);
 
         updateLayouts();
-
     }
-}
 
+}
