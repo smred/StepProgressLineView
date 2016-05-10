@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="StepProgressLineView">
+        <attr name="color_default" format="reference"/>
+        <attr name="color_active" format="reference"/>
+
+        <attr name="step_count" format="integer"/>
+        <attr name="step_current" format="integer"/>
+    </declare-styleable>
+</resources>

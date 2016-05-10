@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:attrs="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:padding="@dimen/activity_vertical_margin">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="1"
+        android:text="@string/description"/>
+
+    <ru.smred.stepprogress.StepProgressLineView
+        android:id="@+id/step_progress"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        attrs:color_active="@color/colorAccent"
+        attrs:color_default="@color/colorPrimaryDark"
+        attrs:step_count="10"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="setStep"
+        android:text="@string/step_set_7"/>
+
+    <LinearLayout
+        android:id="@+id/bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="0px"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:onClick="beginAnim"
+            android:text="@string/step_increment"/>
+
+        <Button
+            android:layout_width="0px"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:onClick="stepBack"
+            android:text="@string/step_decrement"/>
+
+    </LinearLayout>
+
+</LinearLayout>

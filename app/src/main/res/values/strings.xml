@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">StepProgressLineView</string>
+    <string name="step_decrement">Step--</string>
+    <string name="step_increment">Step++</string>
+    <string name="step_set_7">Set Step №7</string>
+    <string name="description">Demo app</string>
+</resources>
