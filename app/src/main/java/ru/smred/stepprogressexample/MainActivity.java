@@ -44,4 +44,8 @@ public class MainActivity extends AppCompatActivity {
         mStepProgressLineView.stepSet(number);
     }
 
+    public void toggleEnableState(View view) {
+        mStepProgressLineView.setEnabled(!mStepProgressLineView.isEnabled());
+    }
+
 }

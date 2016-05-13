@@ -4,7 +4,11 @@ import android.animation.LayoutTransition;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,14 +24,19 @@ public class StepProgressLineView extends RelativeLayout {
 
     private final int DEFAULT_COLOR_DEFAULT = android.R.color.black;
     private final int DEFAULT_COLOR_ACTIVE = android.R.color.holo_green_light;
+    private final int DEFAULT_COLOR_DISABLED = android.R.color.darker_gray;
+    private final int DEFAULT_FADE_DURATION = 500;
     private final int DEFAULT_STEP_CURRENT = 1;
     private final int DEFAULT_STEP_COUNT = 10;
 
+    private int mExitFadeDuration = DEFAULT_FADE_DURATION;
+    private int mColorDefaultDisabled = DEFAULT_COLOR_DISABLED;
+    private int mColorActiveDisabled = DEFAULT_COLOR_DISABLED;
     private int mColorDefault = DEFAULT_COLOR_DEFAULT;
     private int mColorActive = DEFAULT_COLOR_ACTIVE;
     private int mStepCurrent = DEFAULT_STEP_CURRENT;
     private int mStepCount = DEFAULT_STEP_COUNT;
-    private LayoutParams mLPDefault, mLPActive;
+    private View mActiveLine, mDefaultLine;
 
     public StepProgressLineView(Context context) {
         super(context);
@@ -50,9 +59,19 @@ public class StepProgressLineView extends RelativeLayout {
         init(context, attrs);
     }
 
-    private void init(Context context, AttributeSet attrs) {
+    private void init(Context ctx, AttributeSet attrs) {
         if (attrs != null && !isInEditMode()) {
-            TypedArray arr = context.obtainStyledAttributes(attrs, R.styleable.StepProgressLineView);
+            TypedArray arr = ctx.obtainStyledAttributes(attrs, R.styleable.StepProgressLineView);
+            mExitFadeDuration = arr.getInt(R.styleable.StepProgressLineView_color_fade_duration,
+                    DEFAULT_FADE_DURATION);
+            mColorDefaultDisabled = arr.getResourceId(R.styleable.StepProgressLineView_color_default_disable,
+                    DEFAULT_COLOR_DISABLED);
+            mColorActiveDisabled = arr.getResourceId(R.styleable.StepProgressLineView_color_active_disable,
+                    DEFAULT_COLOR_DISABLED);
+            mColorDefault = arr.getResourceId(R.styleable.StepProgressLineView_color_default,
+                    DEFAULT_COLOR_DEFAULT);
+            mColorActive = arr.getResourceId(R.styleable.StepProgressLineView_color_active,
+                    DEFAULT_COLOR_ACTIVE);
             mColorDefault = arr.getResourceId(R.styleable.StepProgressLineView_color_default,
                     DEFAULT_COLOR_DEFAULT);
             mColorActive = arr.getResourceId(R.styleable.StepProgressLineView_color_active,
@@ -67,38 +86,53 @@ public class StepProgressLineView extends RelativeLayout {
         setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
 
-        mLPDefault = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        LayoutParams lpDefault = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        mLPActive = new RelativeLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LayoutParams lpActive = new RelativeLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         LayoutTransition layoutTransition = new LayoutTransition();
         layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
         setLayoutTransition(layoutTransition);
 
-        View defaultLine = new View(context);
-        defaultLine.setLayoutParams(mLPDefault);
-        defaultLine.setBackgroundColor(context.getResources().getColor(mColorDefault));
+        mActiveLine = createView(ctx, lpActive, getStateListDrawable(mColorActive, mColorActiveDisabled));
+        mDefaultLine = createView(ctx, lpDefault, getStateListDrawable(mColorDefault, mColorDefaultDisabled));
 
-        View activeLine = new View(context);
-        activeLine.setLayoutParams(mLPActive);
-        activeLine.setBackgroundColor(context.getResources().getColor(mColorActive));
+        addView(mDefaultLine);
+        addView(mActiveLine);
+    }
 
-        addView(defaultLine);
-        addView(activeLine);
+    private View createView(Context context, LayoutParams layoutParams, Drawable drawable) {
+        View view = new View(context);
+        view.setLayoutParams(layoutParams);
+        view.setBackground(drawable);
+
+        return view;
+    }
+
+    private StateListDrawable getStateListDrawable(int colorEnabled, int colorDisabled) {
+        StateListDrawable stateListDrawable = new StateListDrawable();
+
+        stateListDrawable.addState(new int[] { android.R.attr.state_enabled},
+                new ColorDrawable(getColor(colorEnabled)));
+        stateListDrawable.addState(new int[] { -android.R.attr.state_enabled},
+                new ColorDrawable(getColor(colorDisabled)));
+
+        stateListDrawable.setEnterFadeDuration(mExitFadeDuration);
+        stateListDrawable.setExitFadeDuration(mExitFadeDuration);
+
+        return stateListDrawable;
+    }
+
+    private int getColor(int colorId) {
+        return ContextCompat.getColor(getContext(), colorId);
     }
 
     public void stepNext() {
-        if (mStepCurrent < mStepCount) {
-            mStepCurrent++;
-            updateLayouts();
-        }
+        stepSet(mStepCurrent + 1);
     }
 
     public void stepPrevious() {
-        if (mStepCurrent > 1) {
-            mStepCurrent--;
-            updateLayouts();
-        }
+        stepSet(mStepCurrent - 1);
     }
 
     public void stepSet(int step) {
@@ -108,12 +142,20 @@ public class StepProgressLineView extends RelativeLayout {
         }
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        mActiveLine.setEnabled(enabled);
+        mDefaultLine.setEnabled(enabled);
+    }
+
     private void updateLayouts() {
         final float width = getWidth();
         final float widthStep = width / mStepCount;
 
-        mLPDefault.width = (int) width;
-        mLPActive.width = (int) (widthStep * mStepCurrent);
+        mDefaultLine.getLayoutParams().width = (int) width;
+        mActiveLine.getLayoutParams().width = (int) (widthStep * mStepCurrent);
         requestLayout();
     }
 

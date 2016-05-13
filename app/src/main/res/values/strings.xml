@@ -4,5 +4,6 @@
     <string name="step_increment">Step++</string>
     <string name="step_set">Set Step</string>
     <string name="description">Demo app</string>
+    <string name="toggle_enable_state">Toggle enable state</string>
     <string name="input_step_number">Input step number</string>
 </resources>

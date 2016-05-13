@@ -61,4 +61,10 @@
 
     </LinearLayout>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:onClick="toggleEnableState"
+        android:text="@string/toggle_enable_state"/>
+
 </LinearLayout>
